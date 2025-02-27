@@ -159,7 +159,12 @@ public class Robot extends TimedRobot
   @Override
   public void teleopPeriodic()
   {
-    elevatorFollower.set(joystick.getY());
+    /*if (joystick.getRawButton(0)) {
+      elevatorLeader.set(0.5);
+    }
+    else {
+      elevatorLeader.set(0);
+    }*/
   }
 
   @Override
