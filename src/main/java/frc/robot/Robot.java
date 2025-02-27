@@ -5,10 +5,17 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+
+import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.spark.*;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.config.SparkMaxConfig;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to each mode, as
@@ -24,6 +31,10 @@ public class Robot extends TimedRobot
   private RobotContainer m_robotContainer;
 
   private Timer disabledTimer;
+  SparkMax elevatorLeader;
+  SparkMax elevatorFollower;
+  private static final int kJoystickPort = 0;
+  private Joystick joystick;
 
   public Robot()
   {
@@ -48,6 +59,15 @@ public class Robot extends TimedRobot
     // Create a timer to disable motor brake a few seconds after disable.  This will let the robot stop
     // immediately when disabled, but then also let it be pushed more 
     disabledTimer = new Timer();
+
+    //SPARKMAX CONTROLS FOR NEOs
+    elevatorLeader = new SparkMax (15, MotorType.kBrushless);
+    elevatorFollower = new SparkMax (16, MotorType.kBrushless);
+    SparkMaxConfig followerConfig = new SparkMaxConfig();
+    SparkMaxConfig leaderConfig = new SparkMaxConfig();
+    followerConfig.follow(elevatorLeader);
+    elevatorLeader.configure(leaderConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    elevatorFollower.configure(followerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
     if (isSimulation())
     {
@@ -139,6 +159,7 @@ public class Robot extends TimedRobot
   @Override
   public void teleopPeriodic()
   {
+    elevatorFollower.set(joystick.getY());
   }
 
   @Override
