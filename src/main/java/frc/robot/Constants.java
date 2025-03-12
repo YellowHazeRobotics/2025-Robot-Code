@@ -25,8 +25,24 @@ public final class Constants
   public static final double MAX_SPEED  = Units.feetToMeters(14.5);
 
   public static final int ELEVATOR_POSITION = 4;
-  // Maximum speed of the robot in meters per second, used to limit acceleration.
 
+  public static final int Button_A = 1;
+  public static final int Button_B = 2;
+  public static final int Button_X = 3;
+  public static final int Button_Y = 4;
+
+  public static final int L_Bumper = 5;
+  public static final int R_Bumper = 6;
+
+  public static final int Button_Back = 7;
+  public static final int Button_Start = 8;
+
+  public static final int L_Trigger = 2;
+  public static final int R_Trigger = 3;
+
+
+  
+  // Maximum speed of the robot in meters per second, used to limit acceleration.
 //  public static final class AutonConstants
 //  {
 //
