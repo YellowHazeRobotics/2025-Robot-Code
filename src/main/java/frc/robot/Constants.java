@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import swervelib.math.Matter;
@@ -66,4 +68,30 @@ public final class Constants
     public static final double RIGHT_X_DEADBAND = 0.2;
     public static final double TURN_CONSTANT    = 6;
   }
+
+      public static class ElevatorConstants {
+        // MOTOR CAN BUS IDS
+        public static final int kLeaderID = 15;
+        public static final int kFollowerID = 16;
+        // RAW PID CONSTANTS
+        public static final double kP = 0.3;
+        public static final double kI = 0;
+        public static final double kD = 0;
+        public static final double kFF = 0;
+        // TOLERANCE FOR PID ERROR
+        public static final double kTolerance = 1.0; // TODO: TUNE
+        // LIMIT VALUES
+        public static final double kMinimumRotationLimit = -5; // TODO: SET
+        public static final double kMaximumRotationLimit = 100; // TODO: SET
+        public static final double kMinimumOutputLimit = -.8;
+        public static final double kMaximumOutputLimit = .8;
+        // INVERSIONS
+        public static final boolean kInverted = false;
+        public static final boolean kFollowerInverted = true;
+        // CURRENT LIMITS TODO: TUNE
+        public static final int kStallLimit = 40;
+        public static final int kFreeLimit = 40;
+        // IDLE MODE
+        public static final IdleMode kIdleMode = IdleMode.kBrake;
+    }
 }

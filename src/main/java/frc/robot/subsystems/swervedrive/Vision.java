@@ -41,11 +41,6 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 import swervelib.SwerveDrive;
 import swervelib.telemetry.SwerveDriveTelemetry;
 
-
-/**
- * Example PhotonVision class to aid in the pursuit of accurate odometry. Taken from
- * https://gitlab.com/ironclad_code/ironclad-2024/-/blob/master/src/main/java/frc/robot/vision/Vision.java?ref_type=heads
- */
 public class Vision
 {
 
@@ -57,23 +52,23 @@ public class Vision
   /**
    * Ambiguity defined as a value between (0,1). Used in {@link Vision#filterPose}.
    */
-  private final       double              maximumAmbiguity                = 0.25;
+  private final double maximumAmbiguity = 0.25;
   /**
    * Photon Vision Simulation
    */
-  public              VisionSystemSim     visionSim;
+  public VisionSystemSim visionSim;
   /**
    * Count of times that the odom thinks we're more than 10meters away from the april tag.
    */
-  private             double              longDistangePoseEstimationCount = 0;
+  private double longDistangePoseEstimationCount = 0;
   /**
    * Current pose from the pose estimator using wheel odometry.
    */
-  private             Supplier<Pose2d>    currentPose;
+  private Supplier<Pose2d> currentPose;
   /**
    * Field from {@link swervelib.SwerveDrive#field}
    */
-  private             Field2d             field2d;
+  private Field2d field2d;
 
 
   /**
@@ -131,13 +126,6 @@ public class Vision
   {
     if (SwerveDriveTelemetry.isSimulation && swerveDrive.getSimulationDriveTrainPose().isPresent())
     {
-      /*
-       * In the maple-sim, odometry is simulated using encoder values, accounting for factors like skidding and drifting.
-       * As a result, the odometry may not always be 100% accurate.
-       * However, the vision system should be able to provide a reasonably accurate pose estimation, even when odometry is incorrect.
-       * (This is why teams implement vision system to correct odometry.)
-       * Therefore, we must ensure that the actual robot pose is provided in the simulator when updating the vision simulation during the simulation.
-       */
       visionSim.update(swerveDrive.getSimulationDriveTrainPose().get());
     }
     for (Cameras camera : Cameras.values())
@@ -181,54 +169,6 @@ public class Vision
     }
     return poseEst;
   }
-
-
-  /**
-   * Filter pose via the ambiguity and find best estimate between all of the camera's throwing out distances more than
-   * 10m for a short amount of time.
-   *
-   * @param pose Estimated robot pose.
-   * @return Could be empty if there isn't a good reading.
-   */
-  @Deprecated(since = "2024", forRemoval = true)
-  private Optional<EstimatedRobotPose> filterPose(Optional<EstimatedRobotPose> pose)
-  {
-    if (pose.isPresent())
-    {
-      double bestTargetAmbiguity = 1; // 1 is max ambiguity
-      for (PhotonTrackedTarget target : pose.get().targetsUsed)
-      {
-        double ambiguity = target.getPoseAmbiguity();
-        if (ambiguity != -1 && ambiguity < bestTargetAmbiguity)
-        {
-          bestTargetAmbiguity = ambiguity;
-        }
-      }
-      //ambiguity to high dont use estimate
-      if (bestTargetAmbiguity > maximumAmbiguity)
-      {
-        return Optional.empty();
-      }
-
-      //est pose is very far from recorded robot pose
-      if (PhotonUtils.getDistanceToPose(currentPose.get(), pose.get().estimatedPose.toPose2d()) > 1)
-      {
-        longDistangePoseEstimationCount++;
-
-        //if it calculates that were 10 meter away for more than 10 times in a row its probably right
-        if (longDistangePoseEstimationCount < 10)
-        {
-          return Optional.empty();
-        }
-      } else
-      {
-        longDistangePoseEstimationCount = 0;
-      }
-      return pose;
-    }
-    return Optional.empty();
-  }
-
 
   /**
    * Get distance of the robot from the AprilTag pose.
@@ -634,3 +574,51 @@ public class Vision
   }
 
 }
+
+
+
+/*  /**
+   * Filter pose via the ambiguity and find best estimate between all of the camera's throwing out distances more than
+   * 10m for a short amount of time.
+   *
+   * @param pose Estimated robot pose.
+   * @return Could be empty if there isn't a good reading.
+   
+  @Deprecated(since = "2024", forRemoval = true)
+  private Optional<EstimatedRobotPose> filterPose(Optional<EstimatedRobotPose> pose)
+  {
+    if (pose.isPresent())
+    {
+      double bestTargetAmbiguity = 1; // 1 is max ambiguity
+      for (PhotonTrackedTarget target : pose.get().targetsUsed)
+      {
+        double ambiguity = target.getPoseAmbiguity();
+        if (ambiguity != -1 && ambiguity < bestTargetAmbiguity)
+        {
+          bestTargetAmbiguity = ambiguity;
+        }
+      }
+      //ambiguity to high dont use estimate
+      if (bestTargetAmbiguity > maximumAmbiguity)
+      {
+        return Optional.empty();
+      }
+
+      //est pose is very far from recorded robot pose
+      if (PhotonUtils.getDistanceToPose(currentPose.get(), pose.get().estimatedPose.toPose2d()) > 1)
+      {
+        longDistangePoseEstimationCount++;
+
+        //if it calculates that were 10 meter away for more than 10 times in a row its probably right
+        if (longDistangePoseEstimationCount < 10)
+        {
+          return Optional.empty();
+        }
+      } else
+      {
+        longDistangePoseEstimationCount = 0;
+      }
+      return pose;
+    }
+    return Optional.empty();
+  } */

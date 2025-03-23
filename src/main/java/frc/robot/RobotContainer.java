@@ -42,9 +42,6 @@ public class RobotContainer
 
   private final ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem();
   
-  //5472 code for move past start 1/3 instance
-  private Command autoCommand;
-  //5472 code for move past start 1/3 instance end
   /**
    * Converts driver input into a field-relative ChassisSpeeds that is controlled by angular velocity.
    */
@@ -127,11 +124,7 @@ public class RobotContainer
     Command driveFieldOrientedAnglularVelocityKeyboard = drivebase.driveFieldOriented(driveAngularVelocityKeyboard);
     Command driveSetpointGenKeyboard = drivebase.driveWithSetpointGeneratorFieldRelative(
         driveDirectAngleKeyboard);
-    //5472 code for move past start 2/3 instance
-    autoCommand = Commands.sequence(
-      Commands.runOnce(() -> drivebase.driveToPose(new Pose2d(new Translation2d(2,0),new Rotation2d(0))))
-    );
-    //5472 code for move past start 2/3 instance end
+
     if (RobotBase.isSimulation())
     {
       drivebase.setDefaultCommand(driveFieldOrientedDirectAngleKeyboard);
@@ -159,15 +152,17 @@ public class RobotContainer
     } else
     {
       driverXbox.a().onTrue((Commands.runOnce(drivebase::zeroGyro)));
-      driverXbox.x().onTrue(Commands.runOnce(drivebase::addFakeVisionReading));
+      //driverXbox.x().onTrue(Commands.runOnce(drivebase::addFakeVisionReading));
       /*driverXbox.b().whileTrue(
           drivebase.driveToPose(
               new Pose2d(new Translation2d(4, 4), Rotation2d.fromDegrees(0)))
                               );*/
-      driverXbox.start().whileTrue(Commands.none());
+      //driverXbox.start().whileTrue(Commands.none());
       driverXbox.back().whileTrue(Commands.none());
       //driverXbox.leftBumper().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
       driverXbox.rightBumper().onTrue(Commands.none());
+
+      driverXbox.x().whileTrue(elevatorSubsystem.manuallyRunForward());
     }
 
   }
@@ -181,8 +176,6 @@ public class RobotContainer
   {
     // An example command will be run in autonomous
     return autoChooser.getSelected();
-    ////5472 code for move past start 3/3 instance
-    //return autoCommand;
   }
 
   public void setMotorBrake(boolean brake)
