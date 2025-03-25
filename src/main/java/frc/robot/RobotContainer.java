@@ -162,7 +162,7 @@ public class RobotContainer
       //driverXbox.leftBumper().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
       driverXbox.rightBumper().onTrue(Commands.none());
 
-      driverXbox.x().whileTrue(elevatorSubsystem.manuallyRunForward());
+      driverXbox.x().whileTrue(elevatorSubsystem.manualForward());
     }
 
   }

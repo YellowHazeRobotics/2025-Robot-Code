@@ -166,6 +166,28 @@ public class ElevatorSubsystem extends SubsystemBase {
         SmartDashboard.putBoolean("Elevator at Setpoint", isAtSetpoint());
     }
     
+    public Command manualForward(){
+        return startEnd(
+          () -> leadMotor.set(0.5),
+          () -> leadMotor.set(0));
+      }
+      
+      public Command manualBackWard(){
+        return startEnd(
+          () -> leadMotor.set(0.5), //Make negative????
+          () -> leadMotor.set(0));
+      }
+      
+      public void normalInvert(){
+        leadConfig.inverted(ElevatorConstants.kInverted);
+        leadMotor.configure(leadConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+      }
+      
+      public void invertToBack(){
+        leadConfig.inverted(!ElevatorConstants.kInverted);
+        leadMotor.configure(leadConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+      }
+
     /** Enum for elevator height options. Contains heightCentimeters, which is the target height in centimeters. */
     public enum ElevatorPosition {
         // ENUMS FOR POSITIONS
