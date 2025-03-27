@@ -5,6 +5,7 @@ import frc.robot.Constants.ElevatorConstants;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import com.revrobotics.RelativeEncoder;
@@ -32,6 +33,8 @@ public class ElevatorSubsystem extends SubsystemBase {
     SparkMaxConfig leadConfig, followConfig;
     // CURRENT POSITION
     public ElevatorPosition currentTargetPosition;
+    //VELOCITY, CURRENT
+    double motorVelocity, motorCurrent;
 
     /** Constructs an elevator. */
     public ElevatorSubsystem() {
@@ -47,6 +50,8 @@ public class ElevatorSubsystem extends SubsystemBase {
         // CONFIGS
         leadConfig = new SparkMaxConfig();
         followConfig = new SparkMaxConfig();
+        //Zero Encoder
+        encoder.setPosition(0);
         // CONFIGURE MOTORS
         configureMotors();
     }
@@ -89,6 +94,12 @@ public class ElevatorSubsystem extends SubsystemBase {
         return runOnce(() -> {
             currentTargetPosition = position;
             feedbackController.setReference(position.position, ControlType.kPosition, ClosedLoopSlot.kSlot0);
+        });
+    }
+
+    public Command moveToPosition(double position) {
+        return run(() -> {
+            feedbackController.setReference(position, ControlType.kPosition, ClosedLoopSlot.kSlot0);
         });
     }
 
@@ -174,18 +185,8 @@ public class ElevatorSubsystem extends SubsystemBase {
       
       public Command manualBackWard(){
         return startEnd(
-          () -> leadMotor.set(0.5), //Make negative????
+          () -> leadMotor.set(-0.5), //Make negative????
           () -> leadMotor.set(0));
-      }
-      
-      public void normalInvert(){
-        leadConfig.inverted(ElevatorConstants.kInverted);
-        leadMotor.configure(leadConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-      }
-      
-      public void invertToBack(){
-        leadConfig.inverted(!ElevatorConstants.kInverted);
-        leadMotor.configure(leadConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
       }
 
     /** Enum for elevator height options. Contains heightCentimeters, which is the target height in centimeters. */
@@ -198,7 +199,7 @@ public class ElevatorSubsystem extends SubsystemBase {
       
         GROUND_INTAKE(7), CORAL_STATION_INTAKE(0),
 
-        L_ONE(0), L_TWO(2.5), L_THREE(11), L_FOUR(47);
+        L_ONE(0), L_TWO(10), L_THREE(11), L_FOUR(47);
 
         private double position;
         /**Constrcutor for height for ElevatorPositions (Enum for Elevator poses)

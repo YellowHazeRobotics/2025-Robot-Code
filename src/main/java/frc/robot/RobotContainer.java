@@ -17,9 +17,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.ElevatorSubsystem.ElevatorPosition;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import java.io.File;
 import swervelib.SwerveInputStream;
@@ -41,6 +43,8 @@ public class RobotContainer
   private final SendableChooser<Command> autoChooser;
 
   private final ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem();
+
+  Trigger zeroTrigger;
   
   /**
    * Converts driver input into a field-relative ChassisSpeeds that is controlled by angular velocity.
@@ -125,6 +129,8 @@ public class RobotContainer
     Command driveSetpointGenKeyboard = drivebase.driveWithSetpointGeneratorFieldRelative(
         driveDirectAngleKeyboard);
 
+    RobotModeTriggers.autonomous().onTrue(elevatorSubsystem.resetEncoder());
+
     if (RobotBase.isSimulation())
     {
       drivebase.setDefaultCommand(driveFieldOrientedDirectAngleKeyboard);
@@ -163,6 +169,10 @@ public class RobotContainer
       driverXbox.rightBumper().onTrue(Commands.none());
 
       driverXbox.x().whileTrue(elevatorSubsystem.manualForward());
+      driverXbox.b().whileTrue(elevatorSubsystem.manualBackWard());
+
+      driverXbox.y().onTrue(elevatorSubsystem.moveToPosition(80));
+      driverXbox.a().onTrue(elevatorSubsystem.moveToPosition(0));
     }
 
   }

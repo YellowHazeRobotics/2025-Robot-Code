@@ -76,15 +76,15 @@ public final class Constants
         // RAW PID CONSTANTS
         public static final double kP = 0.3;
         public static final double kI = 0;
-        public static final double kD = 0;
-        public static final double kFF = 0;
+        public static final double kD = 0.01;
+        public static final double kFF = 0.04;
         // TOLERANCE FOR PID ERROR
         public static final double kTolerance = 1.0; // TODO: TUNE
         // LIMIT VALUES
-        public static final double kMinimumRotationLimit = -5; // TODO: SET
-        public static final double kMaximumRotationLimit = 100; // TODO: SET
-        public static final double kMinimumOutputLimit = -.8;
-        public static final double kMaximumOutputLimit = .8;
+        public static final double kMinimumRotationLimit = -50; // TODO: SET
+        public static final double kMaximumRotationLimit = 300; // TODO: SET
+        public static final double kMinimumOutputLimit = -.9;
+        public static final double kMaximumOutputLimit = .9;
         // INVERSIONS
         public static final boolean kInverted = false;
         public static final boolean kFollowerInverted = true;
