@@ -21,13 +21,16 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTablesJNI;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import frc.robot.Constants;
 import frc.robot.Robot;
 import java.awt.Desktop;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
+
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
@@ -41,35 +44,41 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 import swervelib.SwerveDrive;
 import swervelib.telemetry.SwerveDriveTelemetry;
 
+
+/**
+ * Example PhotonVision class to aid in the pursuit of accurate odometry. Taken from
+ * https://gitlab.com/ironclad_code/ironclad-2024/-/blob/master/src/main/java/frc/robot/vision/Vision.java?ref_type=heads
+ */
 public class Vision
 {
 
   /**
    * April Tag Field Layout of the year.
    */
-  public static final AprilTagFieldLayout fieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
+  public static final AprilTagFieldLayout fieldLayout = AprilTagFieldLayout.loadField(
+     AprilTagFields.k2025ReefscapeWelded);
+    
+
   /**
    * Ambiguity defined as a value between (0,1). Used in {@link Vision#filterPose}.
    */
-  private final double maximumAmbiguity = 0.25;
+  private final       double              maximumAmbiguity                = 0.25;
   /**
    * Photon Vision Simulation
    */
-  public VisionSystemSim visionSim;
-  /**
-   * Count of times that the odom thinks we're more than 10meters away from the april tag.
-   */
-  private double longDistangePoseEstimationCount = 0;
+  public              VisionSystemSim     visionSim;
+  
   /**
    * Current pose from the pose estimator using wheel odometry.
    */
-  private Supplier<Pose2d> currentPose;
+  private             Supplier<Pose2d>    currentPose;
   /**
    * Field from {@link swervelib.SwerveDrive#field}
    */
-  private Field2d field2d;
+  private             Field2d             field2d;
 
-
+  int targetID;
+ 
   /**
    * Constructor for the Vision class.
    *
@@ -80,6 +89,7 @@ public class Vision
   {
     this.currentPose = currentPose;
     this.field2d = field;
+    
 
     if (Robot.isSimulation())
     {
@@ -94,7 +104,7 @@ public class Vision
       openSimCameraViews();
     }
   }
-
+  
   /**
    * Calculates a target pose relative to an AprilTag on the field.
    *
@@ -115,7 +125,74 @@ public class Vision
     }
 
   }
+  /*
+   * isValidTargetFor Scoring: is this a valid target to score on?
+   * Target must be within a sight of the robot and a valid target
+   * for our alliance
+   */
+  public boolean isValidTargetForScoring(int targetAprilTag){
+    //look up the target & verify it is valid for our alliance
+    //Blue Alliance reef tags = 17, 18, 19, 20, 21, 22
+    //Red Alliance reef tags = 6, 7, 8, 9, 10, 11
+    var alliance = DriverStation.getAlliance();
+    if (!alliance.isPresent()){ return false;}
+      
+    if ((targetAprilTag >= 17 && targetAprilTag <= 22) && 
+          alliance.get() == DriverStation.Alliance.Blue){
+       return true;
+    }
+    if ((targetAprilTag >= 6 && targetAprilTag <= 11) && 
+          alliance.get() == DriverStation.Alliance.Red){
+        return true;
+    }
+    return false;
+  }
+  //find the latest targets april tag id from the camera
+  //if no target return 0
+  public int getCamerasTargetID(Cameras camera){
+    PhotonTrackedTarget target;
 
+    //System.out.println("Vision:getCamerasTargetID: Check Camera");
+    var results = camera.getLatestResult();
+    if (!results.isEmpty()){
+      var result = results.orElse(null);
+      if (result == null) return(0);
+      if (result.hasTargets()){
+         //System.out.println("   Camera found a result target");
+         target = result.getBestTarget();
+        // System.out.println("   Camera found a best target getting ID");
+         return(target.getFiducialId());
+      }
+    }
+    return(0);
+  }
+  /*
+   * get best Reef Target from the front 2 cameras
+   * only return a target if it is on the same reef as our alliance
+   */
+  public int getBestReefTarget()
+  {
+    for (Cameras camera : Cameras.values()){
+      if (camera.equals(Cameras.FrontLeft)){
+
+        //System.out.println("Vision:GetBestReefTarget: Check FrontLeft Camera");
+        targetID = getCamerasTargetID(camera);
+        
+        if (isValidTargetForScoring(targetID)){
+          return(targetID);
+        }
+      }
+      /*if (camera.equals(Cameras.FrontRight)){
+        //System.out.println("Vision:GetBestReefTarget: Check FrontRight Camera");
+        targetID = getCamerasTargetID(camera);
+        if (isValidTargetForScoring(targetID)){
+          return(targetID);
+        }
+      }*/
+    }
+    //System.out.println("Vision:GetBestReefTarget: NO APRIL TAG TARGET FOUND return 0");
+    return(0);
+  }
   /**
    * Update the pose estimation inside of {@link SwerveDrive} with all of the given poses.
    *
@@ -125,6 +202,13 @@ public class Vision
   {
     if (SwerveDriveTelemetry.isSimulation && swerveDrive.getSimulationDriveTrainPose().isPresent())
     {
+      /*
+       * In the maple-sim, odometry is simulated using encoder values, accounting for factors like skidding and drifting.
+       * As a result, the odometry may not always be 100% accurate.
+       * However, the vision system should be able to provide a reasonably accurate pose estimation, even when odometry is incorrect.
+       * (This is why teams implement vision system to correct odometry.)
+       * Therefore, we must ensure that the actual robot pose is provided in the simulator when updating the vision simulation during the simulation.
+       */
       visionSim.update(swerveDrive.getSimulationDriveTrainPose().get());
     }
     for (Cameras camera : Cameras.values())
@@ -270,37 +354,19 @@ public class Vision
   }
 
   /**
-   * Camera Enum to select each camera
+   * Camera   to select each camera
    */
   enum Cameras
   {
-    /**
-     * Left Camera
-     */
-    LEFT_CAM("left",
-             new Rotation3d(0, Math.toRadians(-24.094), Math.toRadians(30)),
-             new Translation3d(Units.inchesToMeters(12.056),
-                               Units.inchesToMeters(10.981),
-                               Units.inchesToMeters(8.44)),
-             VecBuilder.fill(4, 4, 8), VecBuilder.fill(0.5, 0.5, 1)),
-    /**
-     * Right Camera
-     */
-    RIGHT_CAM("right",
-              new Rotation3d(0, Math.toRadians(-24.094), Math.toRadians(-30)),
-              new Translation3d(Units.inchesToMeters(12.056),
-                                Units.inchesToMeters(-10.981),
-                                Units.inchesToMeters(8.44)),
-              VecBuilder.fill(4, 4, 8), VecBuilder.fill(0.5, 0.5, 1)),
-    /**
-     * Center Camera
-     */
-    CENTER_CAM("center",
-               new Rotation3d(0, Units.degreesToRadians(18), 0),
-               new Translation3d(Units.inchesToMeters(-4.628),
-                                 Units.inchesToMeters(-10.687),
-                                 Units.inchesToMeters(16.129)),
-               VecBuilder.fill(4, 4, 8), VecBuilder.fill(0.5, 0.5, 1));
+    FrontLeft("FrontLeft",
+              new Rotation3d(0, Math.toRadians(14),0),
+              new Translation3d(Units.inchesToMeters(10.625), // x 10.625 inches, y 13.875, z 9 5/16
+                                Units.inchesToMeters(13.875),
+                                Units.inchesToMeters(9.3125)),
+              VecBuilder.fill(4, 4, 8), VecBuilder.fill(0.5, 0.5, 1));
+    /*
+    Front Right Camera*
+     *
 
     /**
      * Latency alert to use when high latency is detected.
@@ -310,6 +376,7 @@ public class Vision
      * Camera instance for comms.
      */
     public final  PhotonCamera                 camera;
+
     /**
      * Pose estimator for camera.
      */
@@ -363,6 +430,7 @@ public class Vision
       latencyAlert = new Alert("'" + name + "' Camera is experiencing high latency.", AlertType.kWarning);
 
       camera = new PhotonCamera(name);
+
 
       // https://docs.wpilib.org/en/stable/docs/software/basic-programming/coordinate-system.html
       robotToCamTransform = new Transform3d(robotToCamTranslation, robotToCamRotation);
@@ -571,53 +639,4 @@ public class Vision
 
 
   }
-
 }
-
-
-
-/*  /**
-   * Filter pose via the ambiguity and find best estimate between all of the camera's throwing out distances more than
-   * 10m for a short amount of time.
-   *
-   * @param pose Estimated robot pose.
-   * @return Could be empty if there isn't a good reading.
-   
-  @Deprecated(since = "2024", forRemoval = true)
-  private Optional<EstimatedRobotPose> filterPose(Optional<EstimatedRobotPose> pose)
-  {
-    if (pose.isPresent())
-    {
-      double bestTargetAmbiguity = 1; // 1 is max ambiguity
-      for (PhotonTrackedTarget target : pose.get().targetsUsed)
-      {
-        double ambiguity = target.getPoseAmbiguity();
-        if (ambiguity != -1 && ambiguity < bestTargetAmbiguity)
-        {
-          bestTargetAmbiguity = ambiguity;
-        }
-      }
-      //ambiguity to high dont use estimate
-      if (bestTargetAmbiguity > maximumAmbiguity)
-      {
-        return Optional.empty();
-      }
-
-      //est pose is very far from recorded robot pose
-      if (PhotonUtils.getDistanceToPose(currentPose.get(), pose.get().estimatedPose.toPose2d()) > 1)
-      {
-        longDistangePoseEstimationCount++;
-
-        //if it calculates that were 10 meter away for more than 10 times in a row its probably right
-        if (longDistangePoseEstimationCount < 10)
-        {
-          return Optional.empty();
-        }
-      } else
-      {
-        longDistangePoseEstimationCount = 0;
-      }
-      return pose;
-    }
-    return Optional.empty();
-  } */
