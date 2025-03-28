@@ -57,6 +57,16 @@ public final class Constants
 
     // Hold time on motor brakes when disabled
     public static final double WHEEL_LOCK_TIME = 10; // seconds
+    public static double DriveFastScale = 1;
+    public static double DrivePrecisionScale = 0.35;
+    // Hold time on motor brakes when disabled
+    public enum TargetSide {LEFT, RIGHT};
+    // robot camera offsets need to be correct with bumper so the 
+    //align to reef works correctly, the reef poles are 6.5 inches from the 
+    //center of the april tag
+    public static double ReefLeftYOffset = Units.inchesToMeters(-9.5);
+    public static double ReefRightYOffset = Units.inchesToMeters(4);
+    public static double ReefXDistance = Units.inchesToMeters(17.0);  
   }
 
   public static class OperatorConstants
@@ -69,29 +79,35 @@ public final class Constants
     public static final double TURN_CONSTANT    = 6;
   }
 
-      public static class ElevatorConstants {
-        // MOTOR CAN BUS IDS
-        public static final int kLeaderID = 15;
-        public static final int kFollowerID = 16;
-        // RAW PID CONSTANTS
-        public static final double kP = 0.3;
-        public static final double kI = 0;
-        public static final double kD = 0.01;
-        public static final double kFF = 0.04;
-        // TOLERANCE FOR PID ERROR
-        public static final double kTolerance = 1.0; // TODO: TUNE
-        // LIMIT VALUES
-        public static final double kMinimumRotationLimit = -50; // TODO: SET
-        public static final double kMaximumRotationLimit = 300; // TODO: SET
-        public static final double kMinimumOutputLimit = -.9;
-        public static final double kMaximumOutputLimit = .9;
-        // INVERSIONS
-        public static final boolean kInverted = false;
-        public static final boolean kFollowerInverted = true;
-        // CURRENT LIMITS TODO: TUNE
-        public static final int kStallLimit = 40;
-        public static final int kFreeLimit = 40;
-        // IDLE MODE
-        public static final IdleMode kIdleMode = IdleMode.kBrake;
-    }
+    public static class ElevatorConstants {
+      // MOTOR CAN BUS IDS
+      public static final int kLeaderID = 15;
+      public static final int kFollowerID = 16;
+      // RAW PID CONSTANTS
+      public static final double kP = 0.3;
+      public static final double kI = 0;
+      public static final double kD = 0.01;
+      public static final double kFF = 0.04;
+      // TOLERANCE FOR PID ERROR
+      public static final double kTolerance = 1.0; // TODO: TUNE
+      // LIMIT VALUES
+      public static final double kMinimumRotationLimit = -50; // TODO: SET
+      public static final double kMaximumRotationLimit = 300; // TODO: SET
+      public static final double kMinimumOutputLimit = -.9;
+      public static final double kMaximumOutputLimit = .9;
+      // INVERSIONS
+      public static final boolean kInverted = false;
+      public static final boolean kFollowerInverted = true;
+      // CURRENT LIMITS TODO: TUNE
+      public static final int kStallLimit = 40;
+      public static final int kFreeLimit = 40;
+      // IDLE MODE
+      public static final IdleMode kIdleMode = IdleMode.kBrake;
+  }
+
+  public static class VisionConstants
+  {
+    public static final boolean DRIVEWITHVISION = true;
+
+  }
 }
