@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.DrivebaseConstants.TargetSide;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem.ElevatorPosition;
@@ -101,6 +102,34 @@ public class RobotContainer
    */
   public RobotContainer()
   {
+        //naming convention = alliance, clock position based on johan's diagram, side of position
+    NamedCommands.registerCommand("Red Align 12 Left", drivebase.alignToReefScore(7,TargetSide.LEFT));
+    NamedCommands.registerCommand("Red Align 12 Right", drivebase.alignToReefScore(7,TargetSide.RIGHT));
+    NamedCommands.registerCommand("Red Align 2 Right", drivebase.alignToReefScore(6,TargetSide.RIGHT));
+    NamedCommands.registerCommand("Red Align 2 Left", drivebase.alignToReefScore(6,TargetSide.LEFT));
+    NamedCommands.registerCommand("Red Align 4 Right", drivebase.alignToReefScore(11,TargetSide.RIGHT));
+    NamedCommands.registerCommand("Red Align 4 Left", drivebase.alignToReefScore(11,TargetSide.LEFT));
+    NamedCommands.registerCommand("Red Align 6 Right", drivebase.alignToReefScore(10,TargetSide.RIGHT));
+    NamedCommands.registerCommand("Red Align 6 Left", drivebase.alignToReefScore(10,TargetSide.LEFT));
+    NamedCommands.registerCommand("Red Align 8 Right", drivebase.alignToReefScore(9,TargetSide.RIGHT));
+    NamedCommands.registerCommand("Red Align 8 Left", drivebase.alignToReefScore(9,TargetSide.LEFT));
+    NamedCommands.registerCommand("Red Align 10 Right", drivebase.alignToReefScore(8,TargetSide.RIGHT));
+    NamedCommands.registerCommand("Red Align 10 Left", drivebase.alignToReefScore(8,TargetSide.LEFT));
+
+    NamedCommands.registerCommand("Blue Align 12 Left", drivebase.alignToReefScore(18,TargetSide.LEFT));
+    NamedCommands.registerCommand("Blue Align 12 Right", drivebase.alignToReefScore(18,TargetSide.RIGHT));
+    NamedCommands.registerCommand("Blue Align 2 Right", drivebase.alignToReefScore(19,TargetSide.RIGHT));
+    NamedCommands.registerCommand("Blue Align 2 Left", drivebase.alignToReefScore(19,TargetSide.LEFT));
+    NamedCommands.registerCommand("Blue Align 4 Right", drivebase.alignToReefScore(20,TargetSide.RIGHT));
+    NamedCommands.registerCommand("Blue Align 4 Left", drivebase.alignToReefScore(20,TargetSide.LEFT));
+    NamedCommands.registerCommand("Blue Align 6 Right", drivebase.alignToReefScore(21,TargetSide.RIGHT));
+    NamedCommands.registerCommand("Blue Align 6 Left", drivebase.alignToReefScore(21,TargetSide.LEFT));
+    NamedCommands.registerCommand("Blue Align 8 Right", drivebase.alignToReefScore(22,TargetSide.RIGHT));
+    NamedCommands.registerCommand("Blue Align 8 Left", drivebase.alignToReefScore(22,TargetSide.LEFT));
+    NamedCommands.registerCommand("Blue Align 10 Right", drivebase.alignToReefScore(17,TargetSide.RIGHT));
+    NamedCommands.registerCommand("Blue Align 10 Left", drivebase.alignToReefScore(17,TargetSide.LEFT));
+    NamedCommands.registerCommand("align Left",Commands.run(()->{drivebase.alignToReefScore(()->drivebase.getReefTargetTagID(), TargetSide.LEFT).schedule();}));
+
     // Configure the trigger bindings
     configureBindings();
     DriverStation.silenceJoystickConnectionWarning(true);
@@ -157,22 +186,71 @@ public class RobotContainer
       driverXbox.rightBumper().onTrue(Commands.none());
     } else
     {
-      driverXbox.a().onTrue((Commands.runOnce(drivebase::zeroGyro)));
+      driverXbox.b().onTrue((Commands.runOnce(drivebase::zeroGyro)));
       //driverXbox.x().onTrue(Commands.runOnce(drivebase::addFakeVisionReading));
       /*driverXbox.b().whileTrue(
           drivebase.driveToPose(
               new Pose2d(new Translation2d(4, 4), Rotation2d.fromDegrees(0)))
                               );*/
       //driverXbox.start().whileTrue(Commands.none());
-      driverXbox.back().whileTrue(Commands.none());
+      //driverXbox.back().whileTrue(Commands.none());
       //driverXbox.leftBumper().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
-      driverXbox.rightBumper().onTrue(Commands.none());
+      //driverXbox.rightBumper().onTrue(Commands.none());
 
-      driverXbox.x().whileTrue(elevatorSubsystem.manualForward());
+      /*driverXbox.x().whileTrue(elevatorSubsystem.manualForward());
       driverXbox.b().whileTrue(elevatorSubsystem.manualBackWard());
 
       driverXbox.y().onTrue(elevatorSubsystem.moveToPosition(80));
-      driverXbox.a().onTrue(elevatorSubsystem.moveToPosition(0));
+      driverXbox.a().onTrue(elevatorSubsystem.moveToPosition(0));*/
+
+
+      driverXbox.leftBumper().onTrue(Commands.runOnce(()->{drivebase.alignToReefScore(()->drivebase.getReefTargetTagID(), TargetSide.LEFT).schedule();}));
+      driverXbox.rightBumper().onTrue(Commands.runOnce(()->{drivebase.alignToReefScore(()->drivebase.getReefTargetTagID(), TargetSide.RIGHT).schedule();}));
+     
+      driverXbox.povUp().onTrue(Commands.runOnce(()->{drivebase.alignToAlgae(()->drivebase.getReefTargetTagID()).schedule();}));
+
+      var allianceColor = DriverStation.getAlliance();
+
+      if (allianceColor.isPresent() && allianceColor.get() == DriverStation.Alliance.Red) {
+        driverXbox.x().and(driverXbox.leftBumper()).whileTrue(drivebase.alignToReefScore(6,TargetSide.LEFT));
+        driverXbox.x().and(driverXbox.rightBumper()).whileTrue(drivebase.alignToReefScore(6,TargetSide.RIGHT));
+    
+        driverXbox.y().and(driverXbox.leftBumper()).whileTrue(drivebase.alignToReefScore(11,TargetSide.LEFT));
+        driverXbox.y().and(driverXbox.rightBumper()).whileTrue(drivebase.alignToReefScore(11,TargetSide.RIGHT));
+    
+        driverXbox.b().and(driverXbox.leftBumper()).whileTrue(drivebase.alignToReefScore(9,TargetSide.LEFT));
+        driverXbox.b().and(driverXbox.rightBumper()).whileTrue(drivebase.alignToReefScore(9,TargetSide.RIGHT));
+    
+        driverXbox.a().and(driverXbox.leftBumper()).whileTrue(drivebase.alignToReefScore(8,TargetSide.LEFT));
+        driverXbox.a().and(driverXbox.rightBumper()).whileTrue(drivebase.alignToReefScore(8,TargetSide.RIGHT));
+  
+        driverXbox.b().and(driverXbox.y()).and(driverXbox.leftBumper()).whileTrue(drivebase.alignToReefScore(10, TargetSide.LEFT));
+        driverXbox.b().and(driverXbox.y()).and(driverXbox.rightBumper()).whileTrue(drivebase.alignToReefScore(10, TargetSide.RIGHT));
+  
+        driverXbox.a().and(driverXbox.x()).and(driverXbox.leftBumper()).whileTrue(drivebase.alignToReefScore(7, TargetSide.LEFT));
+        driverXbox.a().and(driverXbox.x()).and(driverXbox.rightBumper()).whileTrue(drivebase.alignToReefScore(7, TargetSide.RIGHT));
+    
+      } else if (allianceColor.isPresent() && allianceColor.get() == DriverStation.Alliance.Blue) {
+        driverXbox.x().and(driverXbox.leftBumper()).whileTrue(drivebase.alignToReefScore(19,TargetSide.LEFT));
+        driverXbox.x().and(driverXbox.rightBumper()).whileTrue(drivebase.alignToReefScore(19,TargetSide.RIGHT));
+    
+        driverXbox.y().and(driverXbox.leftBumper()).whileTrue(drivebase.alignToReefScore(20,TargetSide.LEFT));
+        driverXbox.y().and(driverXbox.rightBumper()).whileTrue(drivebase.alignToReefScore(20,TargetSide.RIGHT));
+    
+        driverXbox.b().and(driverXbox.leftBumper()).whileTrue(drivebase.alignToReefScore(22,TargetSide.LEFT));
+        driverXbox.b().and(driverXbox.rightBumper()).whileTrue(drivebase.alignToReefScore(22,TargetSide.RIGHT));
+    
+        driverXbox.a().and(driverXbox.leftBumper()).whileTrue(drivebase.alignToReefScore(17,TargetSide.LEFT));
+        driverXbox.a().and(driverXbox.rightBumper()).whileTrue(drivebase.alignToReefScore(17,TargetSide.RIGHT));
+  
+        driverXbox.b().and(driverXbox.y()).and(driverXbox.leftBumper()).whileTrue(drivebase.alignToReefScore(21, TargetSide.LEFT));
+        driverXbox.b().and(driverXbox.y()).and(driverXbox.rightBumper()).whileTrue(drivebase.alignToReefScore(21, TargetSide.RIGHT));
+  
+        driverXbox.a().and(driverXbox.x()).and(driverXbox.leftBumper()).whileTrue(drivebase.alignToReefScore(18, TargetSide.LEFT));
+        driverXbox.a().and(driverXbox.x()).and(driverXbox.rightBumper()).whileTrue(drivebase.alignToReefScore(18, TargetSide.RIGHT));
+      } else {
+        System.out.println("no alliance found");
+      }
     }
 
   }
