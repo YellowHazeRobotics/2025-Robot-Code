@@ -64,9 +64,9 @@ public final class Constants
     // robot camera offsets need to be correct with bumper so the 
     //align to reef works correctly, the reef poles are 6.5 inches from the 
     //center of the april tag
-    public static double ReefLeftYOffset = Units.inchesToMeters(-6.47);
-    public static double ReefRightYOffset = Units.inchesToMeters(6.47);
-    public static double ReefXDistance = Units.inchesToMeters(10);  
+    public static double ReefLeftYOffset = Units.inchesToMeters(-6);
+    public static double ReefRightYOffset = Units.inchesToMeters(6);
+    public static double ReefXDistance = Units.inchesToMeters(5);  
   }
 
   public static class OperatorConstants
@@ -109,5 +109,17 @@ public final class Constants
   {
     public static final boolean DRIVEWITHVISION = true;
 
+  }
+
+  public static class CoralConstants{
+    public static final int kCoralMotorID = 17;
+    public static final IdleMode kIdleMode = IdleMode.kBrake;
+    public static final boolean kInverted = false;
+  }
+
+  public static class AlgaeConstants{
+    public static final int kAlgaeMotorID = 18;
+    public static final IdleMode kIdleMode = IdleMode.kBrake;
+    public static final boolean kInverted = false;
   }
 }

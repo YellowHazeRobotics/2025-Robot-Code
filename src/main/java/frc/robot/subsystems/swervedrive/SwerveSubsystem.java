@@ -351,6 +351,10 @@ public class SwerveSubsystem extends SubsystemBase
                                      );
   }
 
+  public Command driveToPose(int aprilTag, TargetSide scoringSide){
+    return defer(() -> alignToReefScore(aprilTag, scoringSide));
+  }
+
   /**
    * Drive with {@link SwerveSetpointGenerator} from 254, implemented by PathPlanner.
    *

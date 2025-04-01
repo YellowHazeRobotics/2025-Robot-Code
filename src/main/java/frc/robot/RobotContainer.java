@@ -21,6 +21,8 @@ import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.DrivebaseConstants.TargetSide;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.subsystems.AlgaeSubsystem;
+import frc.robot.subsystems.CoralSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem.ElevatorPosition;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
@@ -37,6 +39,7 @@ public class RobotContainer
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   final         CommandXboxController driverXbox = new CommandXboxController(0);
+  final CommandXboxController operatorXbox = new CommandXboxController(1);
   // The robot's subsystems and commands are defined here...
   private final SwerveSubsystem       drivebase  = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
                                                                                 "swerve/neo"));
@@ -44,6 +47,8 @@ public class RobotContainer
   private final SendableChooser<Command> autoChooser;
 
   private final ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem();
+  private final AlgaeSubsystem algaeSubsystem = new AlgaeSubsystem();
+  private final CoralSubsystem coralSubsystem = new CoralSubsystem();
 
   Trigger zeroTrigger;
   
@@ -186,7 +191,7 @@ public class RobotContainer
       driverXbox.rightBumper().onTrue(Commands.none());
     } else
     {
-      driverXbox.b().onTrue((Commands.runOnce(drivebase::zeroGyro)));
+      driverXbox.a().onTrue((Commands.runOnce(drivebase::zeroGyro)));
       //driverXbox.x().onTrue(Commands.runOnce(drivebase::addFakeVisionReading));
       /*driverXbox.b().whileTrue(
           drivebase.driveToPose(
@@ -197,17 +202,36 @@ public class RobotContainer
       //driverXbox.leftBumper().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
       //driverXbox.rightBumper().onTrue(Commands.none());
 
-      /*driverXbox.x().whileTrue(elevatorSubsystem.manualForward());
-      driverXbox.b().whileTrue(elevatorSubsystem.manualBackWard());
+      //CONTOLS FOR ELEVATOR------------------------------
+      //L4
+      operatorXbox.y().onTrue(elevatorSubsystem.moveToPosition(218.77));
+      //L3
+      operatorXbox.b().onTrue(elevatorSubsystem.moveToPosition(125.8));
+      //L2
+      operatorXbox.a().onTrue(elevatorSubsystem.moveToPosition(60.97));
+      //L1
+      operatorXbox.x().onTrue(elevatorSubsystem.moveToPosition(0));
 
-      driverXbox.y().onTrue(elevatorSubsystem.moveToPosition(80));
-      driverXbox.a().onTrue(elevatorSubsystem.moveToPosition(0));*/
+      //Manual Movement
+      operatorXbox.start().whileTrue(elevatorSubsystem.manualForward());
+      operatorXbox.back().whileTrue(elevatorSubsystem.manualBackWard());
 
+      //CONTROLS FOR ALGAE---------------------
+      driverXbox.povRight().whileTrue(algaeSubsystem.manualForward());
+      driverXbox.povLeft().whileTrue(algaeSubsystem.manualBackWard());
 
+      //CONTROLS FOR CORAL---------------------
+      driverXbox.povUp().whileTrue(coralSubsystem.manualForward());
+      driverXbox.povDown().whileTrue(coralSubsystem.manualBackWard());
+
+      //CONTROLS FOR ALIGNMENT-----------------
+      //driverXbox.leftBumper().onTrue(drivebase.driveToPose(drivebase.getReefTargetTagID(), TargetSide.LEFT));
+      //driverXbox.rightBumper().onTrue(drivebase.driveToPose(drivebase.getReefTargetTagID(), TargetSide.RIGHT));
+      // OLD driverXbox.rightBumper().onTrue(Commands.runOnce(()->{drivebase.driveToPose(drivebase.getReefTargetTagID(), TargetSide.RIGHT).schedule();}));
       driverXbox.leftBumper().onTrue(Commands.runOnce(()->{drivebase.alignToReefScore(()->drivebase.getReefTargetTagID(), TargetSide.LEFT).schedule();}));
       driverXbox.rightBumper().onTrue(Commands.runOnce(()->{drivebase.alignToReefScore(()->drivebase.getReefTargetTagID(), TargetSide.RIGHT).schedule();}));
-     
-      driverXbox.povUp().onTrue(Commands.runOnce(()->{drivebase.alignToAlgae(()->drivebase.getReefTargetTagID()).schedule();}));
+
+      //driverXbox.povUp().onTrue(Commands.runOnce(()->{drivebase.alignToAlgae(()->drivebase.getReefTargetTagID()).schedule();}));
 
       var allianceColor = DriverStation.getAlliance();
 
