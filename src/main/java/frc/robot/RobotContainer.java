@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.DrivebaseConstants.TargetSide;
+import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.subsystems.AlgaeSubsystem;
 import frc.robot.subsystems.CoralSubsystem;
@@ -133,7 +134,19 @@ public class RobotContainer
     NamedCommands.registerCommand("Blue Align 8 Left", drivebase.alignToReefScore(22,TargetSide.LEFT));
     NamedCommands.registerCommand("Blue Align 10 Right", drivebase.alignToReefScore(17,TargetSide.RIGHT));
     NamedCommands.registerCommand("Blue Align 10 Left", drivebase.alignToReefScore(17,TargetSide.LEFT));
-    NamedCommands.registerCommand("align Left",Commands.run(()->{drivebase.alignToReefScore(()->drivebase.getReefTargetTagID(), TargetSide.LEFT).schedule();}));
+    NamedCommands.registerCommand("Align Left",Commands.run(()->{drivebase.alignToReefScore(()->drivebase.getReefTargetTagID(), TargetSide.LEFT).schedule();}));
+
+    NamedCommands.registerCommand("Elevator to L1", elevatorSubsystem.moveToPosition(ElevatorConstants.L1HEIGHT));
+    NamedCommands.registerCommand("Elevator to L2", elevatorSubsystem.moveToPosition(ElevatorConstants.L2HEIGHT));
+    NamedCommands.registerCommand("Elevator to L3", elevatorSubsystem.moveToPosition(ElevatorConstants.L3HEIGHT));
+    NamedCommands.registerCommand("Elevator to L4", elevatorSubsystem.moveToPosition(ElevatorConstants.L4HEIGHT));
+
+    NamedCommands.registerCommand("Align and Shoot", Commands.sequence(Commands.deferredProxy(() -> {
+      int aprilTag = drivebase.getReefTargetTagID();
+      return drivebase.alignToReefScore(aprilTag, TargetSide.LEFT);
+      }), elevatorSubsystem.moveToPosition(ElevatorConstants.L4HEIGHT), coralSubsystem.manualForward().withTimeout(5), elevatorSubsystem.moveToPosition(ElevatorConstants.L1HEIGHT)));
+
+    NamedCommands.registerCommand("Intake", coralSubsystem.manualBackWard().withTimeout(3));
 
     // Configure the trigger bindings
     configureBindings();
@@ -191,26 +204,18 @@ public class RobotContainer
       driverXbox.rightBumper().onTrue(Commands.none());
     } else
     {
+      //ZERO GYRO
       driverXbox.a().onTrue((Commands.runOnce(drivebase::zeroGyro)));
-      //driverXbox.x().onTrue(Commands.runOnce(drivebase::addFakeVisionReading));
-      /*driverXbox.b().whileTrue(
-          drivebase.driveToPose(
-              new Pose2d(new Translation2d(4, 4), Rotation2d.fromDegrees(0)))
-                              );*/
-      //driverXbox.start().whileTrue(Commands.none());
-      //driverXbox.back().whileTrue(Commands.none());
-      //driverXbox.leftBumper().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
-      //driverXbox.rightBumper().onTrue(Commands.none());
 
       //CONTOLS FOR ELEVATOR------------------------------
       //L4
-      operatorXbox.y().onTrue(elevatorSubsystem.moveToPosition(218.77));
+      operatorXbox.y().onTrue(elevatorSubsystem.moveToPosition(ElevatorConstants.L4HEIGHT));
       //L3
-      operatorXbox.b().onTrue(elevatorSubsystem.moveToPosition(125.8));
+      operatorXbox.b().onTrue(elevatorSubsystem.moveToPosition(ElevatorConstants.L3HEIGHT));
       //L2
-      operatorXbox.a().onTrue(elevatorSubsystem.moveToPosition(60.97));
+      operatorXbox.a().onTrue(elevatorSubsystem.moveToPosition(ElevatorConstants.L2HEIGHT));
       //L1
-      operatorXbox.x().onTrue(elevatorSubsystem.moveToPosition(0));
+      operatorXbox.x().onTrue(elevatorSubsystem.moveToPosition(ElevatorConstants.L1HEIGHT));
 
       //Manual Movement
       operatorXbox.start().whileTrue(elevatorSubsystem.manualForward());
@@ -225,11 +230,14 @@ public class RobotContainer
       driverXbox.povDown().whileTrue(coralSubsystem.manualBackWard());
 
       //CONTROLS FOR ALIGNMENT-----------------
-      //driverXbox.leftBumper().onTrue(drivebase.driveToPose(drivebase.getReefTargetTagID(), TargetSide.LEFT));
-      //driverXbox.rightBumper().onTrue(drivebase.driveToPose(drivebase.getReefTargetTagID(), TargetSide.RIGHT));
-      // OLD driverXbox.rightBumper().onTrue(Commands.runOnce(()->{drivebase.driveToPose(drivebase.getReefTargetTagID(), TargetSide.RIGHT).schedule();}));
-      driverXbox.leftBumper().onTrue(Commands.runOnce(()->{drivebase.alignToReefScore(()->drivebase.getReefTargetTagID(), TargetSide.LEFT).schedule();}));
-      driverXbox.rightBumper().onTrue(Commands.runOnce(()->{drivebase.alignToReefScore(()->drivebase.getReefTargetTagID(), TargetSide.RIGHT).schedule();}));
+      driverXbox.leftBumper().whileTrue(Commands.deferredProxy(() -> {
+        int aprilTag = drivebase.getReefTargetTagID();
+        return drivebase.alignToReefScore(aprilTag, TargetSide.LEFT);
+        }));
+       driverXbox.rightBumper().whileTrue(Commands.deferredProxy(() -> {
+        int aprilTag = drivebase.getReefTargetTagID();
+        return drivebase.alignToReefScore(aprilTag, TargetSide.RIGHT);
+       }));
 
       //driverXbox.povUp().onTrue(Commands.runOnce(()->{drivebase.alignToAlgae(()->drivebase.getReefTargetTagID()).schedule();}));
 

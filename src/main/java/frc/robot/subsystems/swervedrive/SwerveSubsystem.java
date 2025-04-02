@@ -32,7 +32,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 
 import edu.wpi.first.wpilibj.Timer;
-
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -166,6 +166,7 @@ public class SwerveSubsystem extends SubsystemBase
       //only ask the cameras for the best reef target if we are using vision, otherwise
       //it will be 0
       currAprilTagTarget = vision.getBestReefTarget();
+      SmartDashboard.putNumber("Current APril Tag", currAprilTagTarget);
       //SharedData.getInstance().setCurrentTagID(currAprilTagTarget);
     }
   }
@@ -262,6 +263,7 @@ public class SwerveSubsystem extends SubsystemBase
     Transform2d robotOffset = new Transform2d(DrivebaseConstants.ReefXDistance,0,Rotation2d.kPi);
     if (aprilTag > 0 && vision.isValidTargetForScoring(aprilTag)){
       Pose2d newPose = Vision.getAprilTagPose(aprilTag,robotOffset);
+      System.out.println(newPose);
       return(driveToPose(newPose));
     }
     return(Commands.none());
@@ -340,7 +342,7 @@ public class SwerveSubsystem extends SubsystemBase
   {
 // Create the constraints to use while pathfinding
     PathConstraints constraints = new PathConstraints(
-        swerveDrive.getMaximumChassisVelocity(), 2.5,
+        swerveDrive.getMaximumChassisVelocity(), 1.5,
         swerveDrive.getMaximumChassisAngularVelocity(), Units.degreesToRadians(720));
 
 // Since AutoBuilder is configured, we can use it to build pathfinding commands

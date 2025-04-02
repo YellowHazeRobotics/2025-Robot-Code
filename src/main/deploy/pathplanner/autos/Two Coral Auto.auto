@@ -1,0 +1,49 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Drive to 1st Coral"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Align and Shoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Drive to HPS"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Intake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Drive to 2nd Coral"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Align and Shoot"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}
