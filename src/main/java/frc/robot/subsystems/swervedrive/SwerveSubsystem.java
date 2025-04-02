@@ -257,10 +257,9 @@ public class SwerveSubsystem extends SubsystemBase
   }
   //get the pose to align straight on to an april tag for algae removal
   //generate a path to the april tag.
-  public Command alignToAlgae(IntSupplier aprilTagIntSupplier){
-    int aprilTag = aprilTagIntSupplier.getAsInt();
+  public Command alignToAlgae(int aprilTag){
 
-    Transform2d robotOffset = new Transform2d(DrivebaseConstants.ReefXDistance,0,Rotation2d.kPi);
+    Transform2d robotOffset = new Transform2d(DrivebaseConstants.ReefXDistance, 0, Rotation2d.kPi);
     if (aprilTag > 0 && vision.isValidTargetForScoring(aprilTag)){
       Pose2d newPose = Vision.getAprilTagPose(aprilTag,robotOffset);
       System.out.println(newPose);
@@ -342,7 +341,7 @@ public class SwerveSubsystem extends SubsystemBase
   {
 // Create the constraints to use while pathfinding
     PathConstraints constraints = new PathConstraints(
-        swerveDrive.getMaximumChassisVelocity(), 1.5,
+        swerveDrive.getMaximumChassisVelocity(), 1.25,
         swerveDrive.getMaximumChassisAngularVelocity(), Units.degreesToRadians(720));
 
 // Since AutoBuilder is configured, we can use it to build pathfinding commands

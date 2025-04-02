@@ -11,7 +11,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
+import au.grapplerobotics.LaserCan;
+import au.grapplerobotics.interfaces.LaserCanInterface.Measurement;
+import au.grapplerobotics.ConfigurationFailedException;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkBase;
@@ -30,7 +32,8 @@ public class CoralSubsystem extends SubsystemBase {
   
   private SparkMax m_Coral;
   SparkMaxConfig coralConfig;
-
+  LaserCan laserCan = new LaserCan(19);
+  Measurement laserMeasurement;
   private double currentTargetPosition;
 
   private RelativeEncoder encoder;
@@ -84,6 +87,16 @@ public Command manualBackWard(){
     () -> m_Coral.set(0));
 }
 
+public Command coralIntake(){
+  return run(() -> m_Coral.set(0.2)).until(() -> isCoralInIntake()).finallyDo(() -> m_Coral.set(0));
+}
+
+public boolean isCoralInIntake() {
+  Measurement measurement = laserCan.getMeasurement();
+       
+  return measurement != null && measurement.status == LaserCan.LASERCAN_STATUS_VALID_MEASUREMENT && measurement.distance_mm < 69;
+}
+
 public void normalInvert(){
   coralConfig.inverted(CoralConstants.kInverted);
   m_Coral.configure(coralConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -98,6 +111,7 @@ public void invertToBack(){
   @Override
   public void periodic() {
     SmartDashboard.putNumber("Coral Intake Position", encoder.getPosition());
+    laserMeasurement = laserCan.getMeasurement();
   }
 
   @Override

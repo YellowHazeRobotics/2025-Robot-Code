@@ -359,7 +359,7 @@ public class Vision
   enum Cameras
   {
     FrontLeft("FrontLeft",
-              new Rotation3d(0, Math.toRadians(-14),0),
+              new Rotation3d(Math.toRadians(4), Math.toRadians(-14),Math.toRadians(-5)),
               new Translation3d(Units.inchesToMeters(10.625), // x 10.625 inches, y 13.875, z 9 5/16
                                 Units.inchesToMeters(13.875),
                                 Units.inchesToMeters(9.3125)),
@@ -529,18 +529,7 @@ public class Vision
      */
     private void updateUnreadResults()
     {
-      double mostRecentTimestamp = resultsList.isEmpty() ? 0.0 : resultsList.get(0).getTimestampSeconds();
-      double currentTimestamp    = Microseconds.of(NetworkTablesJNI.now()).in(Seconds);
-      double debounceTime        = Milliseconds.of(15).in(Seconds);
-      for (PhotonPipelineResult result : resultsList)
-      {
-        mostRecentTimestamp = Math.max(mostRecentTimestamp, result.getTimestampSeconds());
-      }
-      if ((resultsList.isEmpty() || (currentTimestamp - mostRecentTimestamp >= debounceTime)) &&
-          (currentTimestamp - lastReadTimestamp) >= debounceTime)
-      {
         resultsList = Robot.isReal() ? camera.getAllUnreadResults() : cameraSim.getCamera().getAllUnreadResults();
-        lastReadTimestamp = currentTimestamp;
         resultsList.sort((PhotonPipelineResult a, PhotonPipelineResult b) -> {
           return a.getTimestampSeconds() >= b.getTimestampSeconds() ? 1 : -1;
         });
@@ -549,8 +538,6 @@ public class Vision
           updateEstimatedGlobalPose();
         }
       }
-    }
-
     /**
      * The latest estimated robot pose on the field from vision data. This may be empty. This should only be called once
      * per loop.

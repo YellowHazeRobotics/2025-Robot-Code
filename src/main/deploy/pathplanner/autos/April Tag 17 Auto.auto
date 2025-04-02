@@ -1,0 +1,62 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "April Tag 17 Path"
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Align Left Test"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Align Left Test"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Align Left Test"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Align Left Test"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Align Left Test"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Shoot"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}

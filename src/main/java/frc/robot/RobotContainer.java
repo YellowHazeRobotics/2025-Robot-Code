@@ -108,7 +108,6 @@ public class RobotContainer
    */
   public RobotContainer()
   {
-        //naming convention = alliance, clock position based on johan's diagram, side of position
     NamedCommands.registerCommand("Red Align 12 Left", drivebase.alignToReefScore(7,TargetSide.LEFT));
     NamedCommands.registerCommand("Red Align 12 Right", drivebase.alignToReefScore(7,TargetSide.RIGHT));
     NamedCommands.registerCommand("Red Align 2 Right", drivebase.alignToReefScore(6,TargetSide.RIGHT));
@@ -135,6 +134,15 @@ public class RobotContainer
     NamedCommands.registerCommand("Blue Align 10 Right", drivebase.alignToReefScore(17,TargetSide.RIGHT));
     NamedCommands.registerCommand("Blue Align 10 Left", drivebase.alignToReefScore(17,TargetSide.LEFT));
     NamedCommands.registerCommand("Align Left",Commands.run(()->{drivebase.alignToReefScore(()->drivebase.getReefTargetTagID(), TargetSide.LEFT).schedule();}));
+
+
+    NamedCommands.registerCommand("Align Left Test", Commands.deferredProxy(() -> {
+      int aprilTag = drivebase.getReefTargetTagID();
+      return drivebase.alignToReefScore(aprilTag, TargetSide.LEFT);
+      }));
+
+    NamedCommands.registerCommand("Shoot", coralSubsystem.manualForward().withTimeout(1));
+
 
     NamedCommands.registerCommand("Elevator to L1", elevatorSubsystem.moveToPosition(ElevatorConstants.L1HEIGHT));
     NamedCommands.registerCommand("Elevator to L2", elevatorSubsystem.moveToPosition(ElevatorConstants.L2HEIGHT));
@@ -222,24 +230,28 @@ public class RobotContainer
       operatorXbox.back().whileTrue(elevatorSubsystem.manualBackWard());
 
       //CONTROLS FOR ALGAE---------------------
-      driverXbox.povRight().whileTrue(algaeSubsystem.manualForward());
-      driverXbox.povLeft().whileTrue(algaeSubsystem.manualBackWard());
+      operatorXbox.povRight().whileTrue(algaeSubsystem.manualForward());
+      operatorXbox.povLeft().whileTrue(algaeSubsystem.manualBackWard());
 
       //CONTROLS FOR CORAL---------------------
-      driverXbox.povUp().whileTrue(coralSubsystem.manualForward());
-      driverXbox.povDown().whileTrue(coralSubsystem.manualBackWard());
+      operatorXbox.povUp().whileTrue(coralSubsystem.coralIntake());
+      operatorXbox.povDown().whileTrue(coralSubsystem.manualForward());
 
       //CONTROLS FOR ALIGNMENT-----------------
       driverXbox.leftBumper().whileTrue(Commands.deferredProxy(() -> {
         int aprilTag = drivebase.getReefTargetTagID();
         return drivebase.alignToReefScore(aprilTag, TargetSide.LEFT);
         }));
+
        driverXbox.rightBumper().whileTrue(Commands.deferredProxy(() -> {
         int aprilTag = drivebase.getReefTargetTagID();
         return drivebase.alignToReefScore(aprilTag, TargetSide.RIGHT);
        }));
 
-      //driverXbox.povUp().onTrue(Commands.runOnce(()->{drivebase.alignToAlgae(()->drivebase.getReefTargetTagID()).schedule();}));
+       driverXbox.povUp().whileTrue(Commands.deferredProxy(() -> {
+        int aprilTag = drivebase.getReefTargetTagID();
+        return drivebase.alignToAlgae(aprilTag);
+       }));
 
       var allianceColor = DriverStation.getAlliance();
 
