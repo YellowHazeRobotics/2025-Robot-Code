@@ -35,6 +35,10 @@ public class ElevatorSubsystem extends SubsystemBase {
     public ElevatorPosition currentTargetPosition;
     //VELOCITY, CURRENT
     double motorVelocity, motorCurrent;
+    public double L1_extra = 0;
+    public double L2_extra = 0;
+    public double L3_extra = 0;
+    public double L4_extra = 0;
 
     /** Constructs an elevator. */
     public ElevatorSubsystem() {
@@ -162,6 +166,55 @@ public class ElevatorSubsystem extends SubsystemBase {
     public Command printPosition() {
         return runOnce(() -> System.out.println(encoder.getPosition()));
     }
+
+    public Command L1_Increase(){
+        return runOnce(() -> L1_Increaser());
+    }
+
+    public void L1_Increaser(){
+        L1_extra +=1 ;
+    }
+
+    public double getL1_Increase(){
+        return L1_extra;
+    }
+
+    public Command L2_Increase(){
+        return runOnce(() -> L2_Increaser());
+    }
+
+    public void L2_Increaser(){
+        L2_extra +=1 ;
+    }
+
+    public double getL2_Increase(){
+        return L2_extra;
+    }
+
+    public Command L3_Increase(){
+        return runOnce(() -> L3_Increaser());
+    }
+
+    public void L3_Increaser(){
+        L3_extra +=1 ;
+    }
+
+    public double getL3_Increase(){
+        return L3_extra;
+    }
+
+    public Command L4_Increase(){
+        return runOnce(() -> L4_Increaser());
+    }
+
+    public void L4_Increaser(){
+        L4_extra +=1 ;
+    }
+
+    public double getL4_Increase(){
+        return L4_extra;
+    }
+
 
     public void setIdleMode(IdleMode idleMode) {
         leadConfig.idleMode(idleMode);

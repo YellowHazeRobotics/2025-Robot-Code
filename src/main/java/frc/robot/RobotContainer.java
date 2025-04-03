@@ -217,13 +217,13 @@ public class RobotContainer
 
       //CONTOLS FOR ELEVATOR------------------------------
       //L4
-      operatorXbox.y().onTrue(elevatorSubsystem.moveToPosition(ElevatorConstants.L4HEIGHT));
+      operatorXbox.y().onTrue(elevatorSubsystem.moveToPosition(ElevatorConstants.L4HEIGHT  + elevatorSubsystem.getL4_Increase()));
       //L3
-      operatorXbox.b().onTrue(elevatorSubsystem.moveToPosition(ElevatorConstants.L3HEIGHT));
+      operatorXbox.b().onTrue(elevatorSubsystem.moveToPosition(ElevatorConstants.L3HEIGHT  + elevatorSubsystem.getL3_Increase()));
       //L2
-      operatorXbox.a().onTrue(elevatorSubsystem.moveToPosition(ElevatorConstants.L2HEIGHT));
+      operatorXbox.a().onTrue(elevatorSubsystem.moveToPosition(ElevatorConstants.L2HEIGHT  + elevatorSubsystem.getL2_Increase()));
       //L1
-      operatorXbox.x().onTrue(elevatorSubsystem.moveToPosition(ElevatorConstants.L1HEIGHT));
+      operatorXbox.x().onTrue(elevatorSubsystem.moveToPosition(ElevatorConstants.L1HEIGHT + elevatorSubsystem.getL1_Increase()));
 
       //Manual Movement
       operatorXbox.start().whileTrue(elevatorSubsystem.manualForward());
@@ -252,6 +252,12 @@ public class RobotContainer
         int aprilTag = drivebase.getReefTargetTagID();
         return drivebase.alignToAlgae(aprilTag);
        }));
+
+       //CONTROLS FOR PID CHANGE-------------------
+       driverXbox.y().onTrue(elevatorSubsystem.L4_Increase());
+       driverXbox.b().onTrue(elevatorSubsystem.L3_Increase());
+       driverXbox.a().onTrue(elevatorSubsystem.L2_Increase());
+       driverXbox.x().onTrue(elevatorSubsystem.L1_Increase());
 
       var allianceColor = DriverStation.getAlliance();
 

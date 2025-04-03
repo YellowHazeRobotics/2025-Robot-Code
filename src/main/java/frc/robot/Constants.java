@@ -104,10 +104,10 @@ public final class Constants
       // IDLE MODE
       public static final IdleMode kIdleMode = IdleMode.kBrake;
       //PID levels
-      public static final double L1HEIGHT = 5;
-      public static final double L2HEIGHT = 50.97;
-      public static final double L3HEIGHT = 100.8;
-      public static final double L4HEIGHT = 190;
+      public static final double L1HEIGHT = 26;
+      public static final double L2HEIGHT = 61.5;
+      public static final double L3HEIGHT = 127.73;
+      public static final double L4HEIGHT = 215;
 
   }
 

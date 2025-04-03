@@ -39,6 +39,11 @@ public class CoralSubsystem extends SubsystemBase {
   private RelativeEncoder encoder;
   private SparkClosedLoopController feedbackController;
 
+  private double L1_PIDExtra;
+  private double L2_PIDExtra;
+  private double L3_PIDExtra;
+  private double L4_PIDExtra;
+
   public CoralSubsystem() {
     m_Coral = new SparkMax(CoralConstants.kCoralMotorID, MotorType.kBrushless);
 
