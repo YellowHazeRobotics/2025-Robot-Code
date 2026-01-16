@@ -6,6 +6,8 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.commands.PathfindingCommand;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -133,13 +135,11 @@ public class RobotContainer
     NamedCommands.registerCommand("Blue Align 8 Left", drivebase.alignToReefScore(22,TargetSide.LEFT));
     NamedCommands.registerCommand("Blue Align 10 Right", drivebase.alignToReefScore(17,TargetSide.RIGHT));
     NamedCommands.registerCommand("Blue Align 10 Left", drivebase.alignToReefScore(17,TargetSide.LEFT));
-    NamedCommands.registerCommand("Align Left",Commands.run(()->{drivebase.alignToReefScore(()->drivebase.getReefTargetTagID(), TargetSide.LEFT).schedule();}));
 
-
-    NamedCommands.registerCommand("Align Left Test", Commands.deferredProxy(() -> {
+    /*NamedCommands.registerCommand("Align Left Test", Commands.deferredProxy(() -> {
       int aprilTag = drivebase.getReefTargetTagID();
       return drivebase.alignToReefScore(aprilTag, TargetSide.LEFT);
-      }));
+      }));*/
 
     NamedCommands.registerCommand("Shoot", coralSubsystem.manualForward().withTimeout(1));
 
@@ -149,19 +149,53 @@ public class RobotContainer
     NamedCommands.registerCommand("Elevator to L3", elevatorSubsystem.moveToPosition(ElevatorConstants.L3HEIGHT));
     NamedCommands.registerCommand("Elevator to L4", elevatorSubsystem.moveToPosition(ElevatorConstants.L4HEIGHT));
 
-    NamedCommands.registerCommand("Align and Shoot", Commands.sequence(Commands.deferredProxy(() -> {
+    /*NamedCommands.registerCommand("Align Left", Commands.sequence(Commands.deferredProxy(() -> {
       int aprilTag = drivebase.getReefTargetTagID();
       return drivebase.alignToReefScore(aprilTag, TargetSide.LEFT);
-      }), elevatorSubsystem.moveToPosition(ElevatorConstants.L4HEIGHT), coralSubsystem.manualForward().withTimeout(5), elevatorSubsystem.moveToPosition(ElevatorConstants.L1HEIGHT)));
+      }), Commands.deferredProxy(() -> {
+        int aprilTag = drivebase.getReefTargetTagID();
+        return drivebase.alignToReefScore(aprilTag, TargetSide.LEFT);
+        }),Commands.deferredProxy(() -> {
+          int aprilTag = drivebase.getReefTargetTagID();
+          return drivebase.alignToReefScore(aprilTag, TargetSide.LEFT);
+          }),Commands.deferredProxy(() -> {
+            int aprilTag = drivebase.getReefTargetTagID();
+            return drivebase.alignToReefScore(aprilTag, TargetSide.LEFT);
+            }),Commands.deferredProxy(() -> {
+              int aprilTag = drivebase.getReefTargetTagID();
+              return drivebase.alignToReefScore(aprilTag, TargetSide.LEFT);
+              }).asProxy()));*/
 
-    NamedCommands.registerCommand("Intake", coralSubsystem.manualBackWard().withTimeout(3));
+
+        /*NamedCommands.registerCommand("Align Left", Commands.sequence(Commands.deferredProxy(() -> {
+          int aprilTag = drivebase.getReefTargetTagID();
+          return drivebase.alignToReefScore(aprilTag, TargetSide.LEFT);
+          }), Commands.deferredProxy(() -> {
+            int aprilTag = drivebase.getReefTargetTagID();
+            return drivebase.alignToReefScore(aprilTag, TargetSide.LEFT);
+            }),Commands.deferredProxy(() -> {
+              int aprilTag = drivebase.getReefTargetTagID();
+              return drivebase.alignToReefScore(aprilTag, TargetSide.LEFT);
+              }),Commands.deferredProxy(() -> {
+                int aprilTag = drivebase.getReefTargetTagID();
+                return drivebase.alignToReefScore(aprilTag, TargetSide.LEFT);
+                }),Commands.deferredProxy(() -> {
+                  int aprilTag = drivebase.getReefTargetTagID();
+                  return drivebase.alignToReefScore(aprilTag, TargetSide.LEFT);
+                  }).withTimeout(6)));*/
+              
+    NamedCommands.registerCommand("Shoot L4", Commands.sequence(elevatorSubsystem.moveToPosition(10), coralSubsystem.manualForward().withTimeout(1), elevatorSubsystem.moveToPosition(ElevatorConstants.L1HEIGHT)));
+    NamedCommands.registerCommand("Intake", coralSubsystem.manualBackWard().withTimeout(5));
+
+    NamedCommands.registerCommand("Align Left Test", Commands.run(() -> {drivebase.alignToReefScore(() -> drivebase.getReefTargetTagID(), TargetSide.LEFT).schedule();}).withTimeout(5.0));
 
     // Configure the trigger bindings
+    autoChooser = AutoBuilder.buildAutoChooser();
     configureBindings();
     DriverStation.silenceJoystickConnectionWarning(true);
     NamedCommands.registerCommand("test", Commands.print("I EXIST"));
-    autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Chooser", autoChooser);
+    PathfindingCommand.warmupCommand().schedule();
   }
 
   /**
@@ -183,6 +217,41 @@ public class RobotContainer
     Command driveFieldOrientedAnglularVelocityKeyboard = drivebase.driveFieldOriented(driveAngularVelocityKeyboard);
     Command driveSetpointGenKeyboard = drivebase.driveWithSetpointGeneratorFieldRelative(
         driveDirectAngleKeyboard);
+
+    /*Command scoreTwoCoralCenter = Commands.sequence(Commands.deferredProxy(() -> {
+              int aprilTag = drivebase.getReefTargetTagID();
+              return drivebase.alignToReefScore(aprilTag, TargetSide.LEFT);
+              }),elevatorSubsystem.moveToPosition(10), 
+              coralSubsystem.manualForward().withTimeout(1), 
+              elevatorSubsystem.moveToPosition(ElevatorConstants.L1HEIGHT));*/
+    
+              
+          
+              
+            /* AutoBuilder.buildAuto("Score 1st Coral", Commands.deferredProxy(() -> {
+                int aprilTag = drivebase.getReefTargetTagID();
+                return drivebase.alignToReefScore(aprilTag, TargetSide.LEFT);
+                }).withTimeout(4),AutoBuilder.buildAuto("Score 2nd Coral"));*/
+
+    Command AlignLeft = Commands.deferredProxy(() -> {
+      int aprilTag = drivebase.getReefTargetTagID();
+      return drivebase.alignToReefScore(TargetSide.LEFT, aprilTag);});
+
+    Command firstCoral = AutoBuilder.buildAuto("Score 1st Coral");
+    Command secondCoral = AutoBuilder.buildAuto("Score 2nd Coral");
+
+
+    /*Command scoreTwoCoralCenter = Commands.sequence(Commands.deferredProxy(() -> {
+      int aprilTag = drivebase.getReefTargetTagID();
+      return drivebase.alignToReefScore(aprilTag, TargetSide.LEFT);
+      }), AutoBuilder.buildAuto("Score 1st Coral"),Commands.deferredProxy(() -> {
+                        int aprilTag = drivebase.getReefTargetTagID();
+                        return drivebase.alignToReefScore(aprilTag, TargetSide.LEFT);
+                        }),AutoBuilder.buildAuto("Score 2nd Coral"));*/
+
+    Command scoreTwoCoralCenter = Commands.sequence(AlignLeft, firstCoral, secondCoral);
+
+    autoChooser.addOption("Score Two From Middle", scoreTwoCoralCenter);
 
     RobotModeTriggers.autonomous().onTrue(elevatorSubsystem.resetEncoder());
 

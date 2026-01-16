@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CoralConstants;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -82,7 +83,7 @@ public void stopMotorManual() {
 
 public Command manualForward(){
   return startEnd(
-    () -> m_Coral.set(0.5),
+    () -> m_Coral.set(0.3),
     () -> m_Coral.set(0));
 }
 
@@ -92,8 +93,12 @@ public Command manualBackWard(){
     () -> m_Coral.set(0));
 }
 
+/*public Command coralIntakeWithDelay(){
+  return Commands.waitUntil(() -> isCoralInIntake()).andThen(Commands.waitSeconds(0.01))
+  .deadlineFor(run(() -> m_Coral.set(0.2)));
+}*/
 public Command coralIntake(){
-  return run(() -> m_Coral.set(0.2)).until(() -> isCoralInIntake()).finallyDo(() -> m_Coral.set(0));
+  return run(() -> m_Coral.set(0.25)).until(() -> isCoralInIntake()).finallyDo(() -> m_Coral.set(0));
 }
 
 public boolean isCoralInIntake() {

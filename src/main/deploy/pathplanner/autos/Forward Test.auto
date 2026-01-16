@@ -7,37 +7,38 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Drive to 1st Coral"
+            "pathName": "Drive Forward More"
           }
         },
         {
-          "type": "named",
+          "type": "sequential",
           "data": {
-            "name": "Align and Shoot"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Align Left"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Shoot L4"
+                }
+              }
+            ]
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Drive to HPS"
+            "pathName": "To HPS From Drive Forward More"
           }
         },
         {
           "type": "named",
           "data": {
             "name": "Intake"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Drive to 2nd Coral"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Align and Shoot"
           }
         }
       ]

@@ -5,21 +5,27 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "Shoot L4"
+          }
+        },
+        {
           "type": "path",
           "data": {
-            "pathName": "April Tag 17 Path"
+            "pathName": "Drive to HPS"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Align Left Test"
+            "name": "Intake"
           }
         },
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "Shoot"
+            "pathName": "Drive to 2nd Coral"
           }
         }
       ]

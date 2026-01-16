@@ -66,7 +66,7 @@ public final class Constants
     //center of the april tag
     public static double ReefLeftYOffset = Units.inchesToMeters(-4.5);
     public static double ReefRightYOffset = Units.inchesToMeters(10);
-    public static double ReefXDistance = Units.inchesToMeters(21.5);   
+    public static double ReefXDistance = Units.inchesToMeters(6);   
   }
 
   public static class OperatorConstants
@@ -104,10 +104,12 @@ public final class Constants
       // IDLE MODE
       public static final IdleMode kIdleMode = IdleMode.kBrake;
       //PID levels
-      public static final double L1HEIGHT = 26;
-      public static final double L2HEIGHT = 61.5;
-      public static final double L3HEIGHT = 127.73;
-      public static final double L4HEIGHT = 215;
+      public static final double L1HEIGHT = 1;
+      public static final double L2HEIGHT = 44.1;
+      public static final double L3HEIGHT = 114;
+      public static final double L4HEIGHT = 214;
+      public static final double lowAlgaeHeight = 106.5;
+      public static final double highAlgaeHeight = 164.6;
 
   }
 

@@ -290,7 +290,33 @@ public class SwerveSubsystem extends SubsystemBase
       System.out.println("No Valid April Tag target " + aprilTag);
       return(Commands.none());
     }
+    //return Commands.runOnce((null), null)
   }
+
+
+  public Command alignToReefScore(TargetSide scoringSide, int aprilTag){
+    Transform2d robotOffset;
+    if (scoringSide == DrivebaseConstants.TargetSide.LEFT){
+      robotOffset = new Transform2d(DrivebaseConstants.ReefXDistance,
+                        DrivebaseConstants.ReefLeftYOffset,Rotation2d.kPi);
+    }
+    else {
+      robotOffset = new Transform2d(DrivebaseConstants.ReefXDistance,
+                        DrivebaseConstants.ReefRightYOffset,Rotation2d.kPi);
+    }
+    if (aprilTag > 0 && vision.isValidTargetForScoring(aprilTag)){
+      Pose2d newPose = Vision.getAprilTagPose(aprilTag, robotOffset);
+      return(driveToPose(newPose).withTimeout(5));
+    }
+    else {
+      System.out.println("No Valid April Tag target " + aprilTag);
+      return(Commands.none());
+    }
+    //return Commands.runOnce((null), null)
+  }
+
+
+
   public Command alignToReefScore(IntSupplier aprilTagSupplier, TargetSide scoringSide){
     return(alignToReefScore(aprilTagSupplier.getAsInt(),scoringSide));
   }
@@ -352,9 +378,9 @@ public class SwerveSubsystem extends SubsystemBase
                                      );
   }
 
-  public Command driveToPose(int aprilTag, TargetSide scoringSide){
+  /*public Command driveToPose(int aprilTag, TargetSide scoringSide){
     return defer(() -> alignToReefScore(aprilTag, scoringSide));
-  }
+  }*/
 
   /**
    * Drive with {@link SwerveSetpointGenerator} from 254, implemented by PathPlanner.

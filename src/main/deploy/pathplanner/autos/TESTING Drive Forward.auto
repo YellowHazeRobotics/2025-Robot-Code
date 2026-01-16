@@ -5,9 +5,9 @@
     "data": {
       "commands": [
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "Shoot"
+            "pathName": "Drive to 1st Coral"
           }
         }
       ]
